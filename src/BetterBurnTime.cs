@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
-using KSP.IO;
 
 namespace BetterBurnTime
 {
@@ -11,55 +9,51 @@ namespace BetterBurnTime
         // Treat any acceleration smaller than this as zero.
         private static readonly double ACCELERATION_EPSILON = 0.000001;
 
-        // Time thresholds for using various string formats
-        private static readonly int THRESHOLD_SECONDS = 120;
-        private static readonly int THRESHOLD_MINUTES_SECONDS = 120 * 60;
-        private static readonly int THRESHOLD_HOURS_MINUTES_SECONDS = 6 * 60 * 60;
-        private static readonly int THRESHOLD_HOURS_MINUTES = 4 * THRESHOLD_HOURS_MINUTES_SECONDS;
-
         // Kerbin gravity, needed for working with Isp
         private static readonly double KERBIN_GRAVITY = 9.81;
 
-        private static readonly String ESTIMATED_BURN_LABEL = "Est. Burn: ";
+        private static readonly string ESTIMATED_BURN_LABEL = "Est. Burn: ";
 
-        private bool useSimpleAcceleration = false;
+        // Displayed in place of burn time when it's an EVA kerbal.
+        private static readonly string EVA_KERBAL_LABEL = string.Empty;
+
+        // Configurable values
+        private static readonly bool useSimpleAcceleration = Configuration.useSimpleAcceleration;
+
+        // Other private data
         private bool wasFuelCheat = false;
         private int lastEngineCount;
         private ShipState vessel;
-        private NavBallBurnVector burnVector;
-        private String lastUpdateText;
+        private string lastUpdateText;
         private int lastBurnTime;
+        private int lastTimeUntilBurnStart;
         private Tally propellantsConsumed;
 
         public void Start()
         {
-            PluginConfiguration config = PluginConfiguration.CreateForType<BetterBurnTime>();
-            config.load();
-            useSimpleAcceleration = config.GetValue<bool>("UseSimpleAcceleration", false);
-            config.save();
-            wasFuelCheat = CheatOptions.InfiniteFuel;
+            wasFuelCheat = CheatOptions.InfinitePropellant;
             if (useSimpleAcceleration)
             {
-                Log("Using simple acceleration model");
+                Logging.Log("Using simple acceleration model");
             }
             else
             {
-                Log("Using complex acceleration model");
+                Logging.Log("Using complex acceleration model");
                 if (wasFuelCheat)
                 {
-                    Log("Infinite fuel cheat is turned on, using simple acceleration model");
+                    Logging.Log("Infinite fuel cheat is turned on, using simple acceleration model");
                 }
                 else
                 {
-                    Log("Using complex acceleration model");
+                    Logging.Log("Using complex acceleration model");
                 }
             }
             lastEngineCount = -1;
 
             vessel = new ShipState();
-            burnVector = GameObject.FindObjectOfType<NavBallBurnVector>();
             lastUpdateText = null;
             lastBurnTime = int.MinValue;
+            lastTimeUntilBurnStart = int.MinValue;
         }
 
         public void LateUpdate()
@@ -67,31 +61,94 @@ namespace BetterBurnTime
             logFuelCheatActivation();
             try
             {
-                if (burnVector.ebtText.enabled)
+                if (!BurnInfo.IsInitialized) return; // can't do anything
+
+                string customDescription = null;
+                double dVrequired = ImpactTracker.ImpactSpeed;
+                int timeUntil = -1;
+                if (double.IsNaN(dVrequired))
                 {
+                    // No impact info is available. Do we have closest-approach info?
+                    dVrequired = ClosestApproachTracker.Velocity;
+                    if (double.IsNaN(dVrequired))
+                    {
+                        // No closest-approach info available either, use the maneuver dV remaining.
+                        dVrequired = BurnInfo.DvRemaining;
+                        timeUntil = SecondsUntilNode();
+                    }
+                    else
+                    {
+                        // We have closest-approach info, use the description from that.
+                        customDescription = ClosestApproachTracker.Description;
+                        timeUntil = ClosestApproachTracker.TimeUntil;
+                    }
+                }
+                else
+                {
+                    // We have impact info, use the description from that.
+                    customDescription = ImpactTracker.Description;
+                    // TODO: enable countdown to retro-burn, not doing it now 'coz it needs more math & logic
+                    // timeUntil = ImpactTracker.TimeUntil;
+                }
+
+                // At this point, either we have a dVrequired or not. If we have one, we might
+                // have a description (meaning it's one of our custom trackers from this mod)
+                // or we might not (meaning "leave it alone at let the stock game decide what to say").
+
+                if (double.IsNaN(dVrequired)) return;
+                if (FlightGlobals.ActiveVessel == null) return;
+
+                if (FlightGlobals.ActiveVessel.IsEvaKerbal())
+                {
+                    // it's a kerbal on EVA
+                    BurnInfo.Duration = EVA_KERBAL_LABEL;
+                    BurnInfo.Countdown = string.Empty;
+                }
+                else
+                {
+                    // it's a ship, not an EVA kerbal
                     vessel.Refresh();
                     propellantsConsumed = new Tally();
                     bool isInsufficientFuel;
-                    double floatBurnSeconds = GetBurnTime(burnVector.dVremaining, out isInsufficientFuel);
+                    double floatBurnSeconds = GetBurnTime(dVrequired, out isInsufficientFuel);
                     int burnSeconds = double.IsInfinity(floatBurnSeconds) ? -1 : (int)(0.5 + floatBurnSeconds);
                     if (burnSeconds != lastBurnTime)
                     {
                         lastBurnTime = burnSeconds;
-                        String burnLabel = FormatBurnTime(burnSeconds);
-                        lastUpdateText = ESTIMATED_BURN_LABEL + FormatBurnTime(burnSeconds);
                         if (isInsufficientFuel)
                         {
-                            lastUpdateText = ESTIMATED_BURN_LABEL + "(~" + burnLabel + ")";
-                        } else
+                            lastUpdateText = ESTIMATED_BURN_LABEL + TimeFormatter.Default.warn(burnSeconds);
+                        }
+                        else
                         {
-                            lastUpdateText = ESTIMATED_BURN_LABEL + burnLabel;
+                            lastUpdateText = ESTIMATED_BURN_LABEL + TimeFormatter.Default.format(burnSeconds);
                         }
                     }
-                    burnVector.ebtText.text = lastUpdateText;
+                    BurnInfo.Duration = lastUpdateText;
+                    int timeUntilBurnStart = timeUntil - burnSeconds / 2;
+                    if (timeUntilBurnStart != lastTimeUntilBurnStart)
+                    {
+                        lastTimeUntilBurnStart = timeUntilBurnStart;
+                        BurnInfo.Countdown = Countdown.ForSeconds(timeUntilBurnStart);
+                    }
                 }
-            } catch (Exception e)
+
+                if (customDescription == null)
+                {
+                    // No custom description available, turn off the alternate display
+                    BurnInfo.AlternateDisplayEnabled = false;
+                }
+                else
+                {
+                    // We have alternate info to show
+                    BurnInfo.TimeUntil = customDescription;
+                    BurnInfo.AlternateDisplayEnabled = true;
+                }
+            }
+            catch (Exception e)
             {
-                burnVector.ebtText.text = e.GetType().Name + ": " + e.Message + " -> " + e.StackTrace;
+                Logging.Exception(e);
+                BurnInfo.Duration = e.GetType().Name + ": " + e.Message + " -> " + e.StackTrace;
             }
         }
 
@@ -100,61 +157,20 @@ namespace BetterBurnTime
         /// </summary>
         private void logFuelCheatActivation()
         {
-            if (CheatOptions.InfiniteFuel != wasFuelCheat)
+            if (CheatOptions.InfinitePropellant != wasFuelCheat)
             {
-                wasFuelCheat = CheatOptions.InfiniteFuel;
+                wasFuelCheat = CheatOptions.InfinitePropellant;
                 if (!useSimpleAcceleration)
                 {
                     if (wasFuelCheat)
                     {
-                        Log("Infinite fuel cheat activated. Will use simple acceleration model.");
+                        Logging.Log("Infinite fuel cheat activated. Will use simple acceleration model.");
                     }
                     else
                     {
-                        Log("Infinite fuel cheat deactivated. Will use complex acceleration model.");
+                        Logging.Log("Infinite fuel cheat deactivated. Will use complex acceleration model.");
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Given a burn time in seconds, get a string representation.
-        /// </summary>
-        /// <param name="totalSeconds"></param>
-        /// <returns></returns>
-        private static String FormatBurnTime(int totalSeconds)
-        {
-            if (totalSeconds < 0)
-            {
-                return "N/A";
-            }
-            if (totalSeconds <= THRESHOLD_SECONDS)
-            {
-                return totalSeconds.ToString("#s");
-            }
-            else if (totalSeconds <= THRESHOLD_MINUTES_SECONDS)
-            {
-                int minutes = totalSeconds / 60;
-                int seconds = totalSeconds % 60;
-                return String.Format("{0}m{1}s", minutes, seconds);
-            }
-            else if (totalSeconds <= THRESHOLD_HOURS_MINUTES_SECONDS)
-            {
-                int hours = totalSeconds / 3600;
-                int minutes = (totalSeconds % 3600) / 60;
-                int seconds = totalSeconds % 60;
-                return String.Format("{0}h{1}m{2}s", hours, minutes, seconds);
-            }
-            else if (totalSeconds <= THRESHOLD_HOURS_MINUTES)
-            {
-                int hours = totalSeconds / 3600;
-                int minutes = (totalSeconds % 3600) / 60;
-                return String.Format("{0}h{1}m", hours, minutes);
-            }
-            else
-            {
-                int hours = THRESHOLD_HOURS_MINUTES / 3600;
-                return hours.ToString(">#h");
             }
         }
 
@@ -168,11 +184,15 @@ namespace BetterBurnTime
             // How thirsty are we?
             double totalThrust; // kilonewtons
             GetThrustInfo(propellantsConsumed, out totalThrust);
-            if (totalThrust < ACCELERATION_EPSILON) return double.PositiveInfinity;
+            if (totalThrust < ACCELERATION_EPSILON)
+            {
+                // Can't thrust, will take forever.
+                return double.PositiveInfinity;
+            }
 
             // If infinite fuel is turned on, or if the "use simple acceleration" config
             // option is set, just do a simple dV calculation.
-            if (CheatOptions.InfiniteFuel || useSimpleAcceleration)
+            if (CheatOptions.InfinitePropellant || useSimpleAcceleration)
             {
                 return dVremaining * vessel.TotalMass / totalThrust;
             }
@@ -222,18 +242,27 @@ namespace BetterBurnTime
             propellantsConsumed.Zero();
             Tally availableResources = vessel.AvailableResources;
             int engineCount = 0;
-            foreach (ModuleEngines engine in vessel.ActiveEngines)
+            for (int engineIndex = 0; engineIndex < vessel.ActiveEngines.Count; ++engineIndex)
             {
+                ModuleEngines engine = vessel.ActiveEngines[engineIndex];
                 if (engine.thrustPercentage > 0)
                 {
-                    double engineKilonewtons = engine.maxThrust * engine.thrustPercentage * 0.01;
-                    if (!CheatOptions.InfiniteFuel)
+                    double engineKilonewtons = engine.ThrustLimit();
+                    if (!CheatOptions.InfinitePropellant)
                     {
-                        double engineTotalFuelConsumption = engineKilonewtons / (KERBIN_GRAVITY * engine.realIsp); // tons/sec
+                        // Possible future consideraiton:
+                        // Get the vacuum Isp from engine.atmosphereCurve.Evaluate(0), rather than ask
+                        // for engine.realIsp, because there may be mods that tinker with the atmosphere
+                        // curve, which changes the actual Isp that the game uses for vacuum without
+                        // updating engine.realIsp.
+                        double engineIsp = engine.realIsp;
+
+                        double engineTotalFuelConsumption = engineKilonewtons / (KERBIN_GRAVITY * engineIsp); // tons/sec
                         double ratioSum = 0.0;
                         bool isStarved = false;
-                        foreach (Propellant propellant in engine.propellants)
+                        for (int propellantIndex = 0; propellantIndex < engine.propellants.Count; ++propellantIndex)
                         {
+                            Propellant propellant = engine.propellants[propellantIndex];
                             if (!ShouldIgnore(propellant.name))
                             {
                                 if (!availableResources.Has(propellant.name))
@@ -248,8 +277,9 @@ namespace BetterBurnTime
                         if (ratioSum > 0)
                         {
                             double ratio = 1.0 / ratioSum;
-                            foreach (Propellant propellant in engine.propellants)
+                            for (int propellantIndex = 0; propellantIndex < engine.propellants.Count; ++propellantIndex)
                             {
+                                Propellant propellant = engine.propellants[propellantIndex];
                                 if (!ShouldIgnore(propellant.name))
                                 {
                                     double consumptionRate = ratio * propellant.ratio * engineTotalFuelConsumption; // tons/sec
@@ -259,18 +289,14 @@ namespace BetterBurnTime
                         }
                     } // if we need to worry about fuel
                     ++engineCount;
-                    foreach (Transform transform in engine.thrustTransforms)
-                    {
-                        Vector3 increment = transform.forward * (float)engineKilonewtons;
-                        totalThrustVector += increment;
-                    }
+                    totalThrustVector += engine.Forward() * (float)engineKilonewtons;
                 } // if the engine is operational
             } // for each engine module on the part
             totalThrust = totalThrustVector.magnitude;
             if (engineCount != lastEngineCount)
             {
                 lastEngineCount = engineCount;
-                Log(engineCount.ToString("Active engines: #"));
+                Logging.Log(engineCount.ToString("Active engines: ##0"));
             }
         }
 
@@ -285,7 +311,7 @@ namespace BetterBurnTime
         {
             double maxBurnTime = double.PositiveInfinity;
             Tally availableResources = vessel.AvailableResources;
-            foreach (String resourceName in propellantsConsumed.Keys)
+            foreach (string resourceName in propellantsConsumed.Keys)
             {
                 if (ShouldIgnore(resourceName))
                 {
@@ -305,14 +331,27 @@ namespace BetterBurnTime
             return maxBurnTime;
         }
 
-        private static void Log(object message)
-        {
-            Debug.Log("[BetterBurnTime] " + message);
-        }
-
-        private static bool ShouldIgnore(String propellantName)
+        private static bool ShouldIgnore(string propellantName)
         {
             return "ElectricCharge".Equals(propellantName);
+        }
+
+        /// <summary>
+        /// Gets the time until the next maneuver node, in seconds. -1 if none.
+        /// </summary>
+        /// <returns></returns>
+        private static int SecondsUntilNode()
+        {
+            Vessel vessel = FlightGlobals.ActiveVessel;
+            if (vessel == null) return -1;
+            PatchedConicSolver solver = vessel.patchedConicSolver;
+            if (solver == null) return -1;
+            if ((solver.maneuverNodes == null) || (solver.maneuverNodes.Count == 0)) return -1;
+            ManeuverNode node = solver.maneuverNodes[0];
+            if (node == null) return -1;
+            double timeUntil = node.UT - Planetarium.GetUniversalTime();
+            if (timeUntil < 0) return -1;
+            return (int)timeUntil;
         }
     }
 }

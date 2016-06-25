@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BetterBurnTime
 {
@@ -41,21 +38,25 @@ namespace BetterBurnTime
             }
             lastUpdateTime = DateTime.Now;
             Vessel vessel = FlightGlobals.ActiveVessel;
+            if (vessel == null) return;
             vesselId = vessel.id;
             vesselPartCount = vessel.parts.Count;
             totalMass = vessel.GetTotalMass();
             activeEngines.Clear();
-            availableResources = new Tally();
-            foreach (Part part in vessel.Parts)
+            for (int engineIndex = 0; engineIndex < Propulsion.Engines.Count; ++engineIndex)
             {
-                foreach (ModuleEngines engine in part.Modules.GetModules<ModuleEngines>())
+                Part part = Propulsion.Engines[engineIndex];
+                for (int moduleIndex = 0; moduleIndex < part.Modules.Count; ++moduleIndex)
                 {
+                    ModuleEngines engine = part.Modules[moduleIndex] as ModuleEngines;
+                    if (engine == null) continue;
                     if (!engine.isOperational) continue;
-                    if (!CheatOptions.InfiniteFuel)
+                    if (!CheatOptions.InfinitePropellant)
                     {
                         bool isDeprived = false;
-                        foreach (Propellant propellant in engine.propellants)
+                        for (int propellantIndex = 0; propellantIndex < engine.propellants.Count; ++propellantIndex)
                         {
+                            Propellant propellant = engine.propellants[propellantIndex];
                             if (propellant.isDeprived && !propellant.ignoreForIsp)
                             {
                                 isDeprived = true; // out of fuel!
@@ -66,8 +67,15 @@ namespace BetterBurnTime
                     }
                     activeEngines.Add(engine);
                 }
-                foreach (PartResource resource in part.Resources)
+            }
+
+            availableResources = new Tally();
+            for (int tankIndex = 0; tankIndex < Propulsion.Tanks.Count; ++tankIndex)
+            {
+                Part part = Propulsion.Tanks[tankIndex];
+                for (int resourceIndex = 0; resourceIndex < part.Resources.Count; ++resourceIndex)
                 {
+                    PartResource resource = part.Resources[resourceIndex];
                     if (resource.flowState)
                     {
                         availableResources.Add(resource.resourceName, resource.amount * resource.info.density);
@@ -106,6 +114,7 @@ namespace BetterBurnTime
             if (now - lastUpdateTime > updateInterval) return true;
 
             Vessel vessel = FlightGlobals.ActiveVessel;
+            if (vessel == null) return false;
             return (vessel.id != vesselId) || (vessel.parts.Count != vesselPartCount);
         }
     }
