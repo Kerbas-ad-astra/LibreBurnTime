@@ -1,5 +1,5 @@
 ﻿//
-// This file is part of LiberatedBurnTime.
+// This file is part of LibreBurnTime.
 //
 //  Copyright (c) 2016 Kerbas-ad-astra
 //
@@ -22,7 +22,7 @@ using UnityEngine.UI;
 using KSP.UI.Screens.Flight;
 using TMPro;
 
-namespace LiberatedBurnTime
+namespace LibreBurnTime
 {
     /// <summary>
     /// Provides access to the display of "estimated burn time" and "time remaining until burn".

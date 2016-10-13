@@ -1,5 +1,5 @@
 ﻿//
-// This file is part of LiberatedBurnTime.
+// This file is part of LibreBurnTime.
 //
 //  Copyright (c) 2016 Kerbas-ad-astra
 //
@@ -20,7 +20,7 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 
-namespace LiberatedBurnTime
+namespace LibreBurnTime
 {
     /// <summary>
     /// Provides a safe wrapper to avoid getting NullReferenceExceptions from Unity 5. See comments

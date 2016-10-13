@@ -1,5 +1,5 @@
 ﻿//
-// This file is part of LiberatedBurnTime.
+// This file is part of LibreBurnTime.
 //
 //  Copyright (c) 2016 Kerbas-ad-astra
 //
@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LiberatedBurnTime
+namespace LibreBurnTime
 {
     /// <summary>
     /// Keeps track of engines and propellant tanks on the active ship.

@@ -1,5 +1,5 @@
 ﻿//
-// This file is part of LiberatedBurnTime.
+// This file is part of LibreBurnTime.
 //
 //  Copyright (c) 2016 Kerbas-ad-astra
 //
@@ -20,7 +20,7 @@ using KSP.IO;
 using System;
 using System.Collections.Generic;
 
-namespace LiberatedBurnTime
+namespace LibreBurnTime
 {
     static class Configuration
     {
@@ -52,7 +52,7 @@ namespace LiberatedBurnTime
 
         static Configuration()
         {
-            PluginConfiguration config = PluginConfiguration.CreateForType<LiberatedBurnTime>();
+            PluginConfiguration config = PluginConfiguration.CreateForType<LibreBurnTime>();
             config.load();
 
             // General program usage

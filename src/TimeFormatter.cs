@@ -1,5 +1,5 @@
 ﻿//
-// This file is part of LiberatedBurnTime.
+// This file is part of LibreBurnTime.
 //
 //  Copyright (c) 2016 Kerbas-ad-astra
 //
@@ -16,7 +16,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace LiberatedBurnTime
+namespace LibreBurnTime
 {
     /// <summary>
     /// Utility class for dealing with time formats.

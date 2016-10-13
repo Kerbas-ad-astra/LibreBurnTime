@@ -1,5 +1,5 @@
 ﻿//
-// This file is part of LiberatedBurnTime.
+// This file is part of LibreBurnTime.
 //
 //  Copyright (c) 2016 Kerbas-ad-astra
 //
@@ -19,10 +19,10 @@
 using System;
 using UnityEngine;
 
-namespace LiberatedBurnTime
+namespace LibreBurnTime
 {
     [KSPAddon(KSPAddon.Startup.Flight, false)]
-    public class LiberatedBurnTime : MonoBehaviour
+    public class LibreBurnTime : MonoBehaviour
     {
         // Treat any acceleration smaller than this as zero.
         private static readonly double ACCELERATION_EPSILON = 0.000001;

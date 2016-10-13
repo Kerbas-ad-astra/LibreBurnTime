@@ -7,8 +7,8 @@
     <ProjectGuid>{A2696040-8EF6-4B00-8394-EBEF3E578324}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LiberatedBurnTime</RootNamespace>
-    <AssemblyName>LiberatedBurnTime</AssemblyName>
+    <RootNamespace>LibreBurnTime</RootNamespace>
+    <AssemblyName>LibreBurnTime</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,7 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LiberatedBurnTime.cs" />
+    <Compile Include="LibreBurnTime.cs" />
     <Compile Include="BurnInfo.cs" />
     <Compile Include="ClosestApproachTracker.cs" />
     <Compile Include="Configuration.cs" />
@@ -73,7 +73,7 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <StandardHeader Text=" &#xA;This file is part of LiberatedBurnTime.&#xA;&#xA; Copyright (c) ${Year} Kerbas-ad-astra&#xA;&#xA; This program is free software: you can redistribute it and/or modify&#xA; it under the terms of the GNU General Public License as published by&#xA; the Free Software Foundation, either version 3 of the License, or&#xA; (at your option) any later version.&#xA;&#xA; This program is distributed in the hope that it will be useful,&#xA; but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA; GNU General Public License for more details.&#xA;&#xA; You should have received a copy of the GNU General Public License&#xA; along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;." IncludeInNewFiles="True" />
+          <StandardHeader Text=" &#xA;This file is part of LibreBurnTime.&#xA;&#xA; Copyright (c) ${Year} Kerbas-ad-astra&#xA;&#xA; This program is free software: you can redistribute it and/or modify&#xA; it under the terms of the GNU General Public License as published by&#xA; the Free Software Foundation, either version 3 of the License, or&#xA; (at your option) any later version.&#xA;&#xA; This program is distributed in the hope that it will be useful,&#xA; but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA; GNU General Public License for more details.&#xA;&#xA; You should have received a copy of the GNU General Public License&#xA; along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;." IncludeInNewFiles="True" />
         </Policies>
       </Properties>
     </MonoDevelop>

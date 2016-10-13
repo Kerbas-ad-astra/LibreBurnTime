@@ -1,5 +1,5 @@
 ﻿//
-// This file is part of LiberatedBurnTime.
+// This file is part of LibreBurnTime.
 //
 //  Copyright (c) 2016 Kerbas-ad-astra
 //
@@ -18,7 +18,7 @@
 
 using System.Collections.Generic;
 
-namespace LiberatedBurnTime
+namespace LibreBurnTime
 {
     /// <summary>
     /// Serves up strings to use as a countdown indicator.
