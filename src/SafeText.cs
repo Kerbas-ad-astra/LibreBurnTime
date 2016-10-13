@@ -1,7 +1,26 @@
-﻿using System;
-using UnityEngine.UI;
+﻿//
+// This file is part of LiberatedBurnTime.
+//
+//  Copyright (c) 2016 Kerbas-ad-astra
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace BetterBurnTime
+using System;
+using UnityEngine.UI;
+using TMPro;
+
+namespace LiberatedBurnTime
 {
     /// <summary>
     /// Provides a safe wrapper to avoid getting NullReferenceExceptions from Unity 5. See comments
@@ -12,9 +31,9 @@ namespace BetterBurnTime
     /// </summary>
     class SafeText
     {
-        private Text text;
+        private TextMeshProUGUI text;
 
-        private SafeText(Text text)
+        private SafeText(TextMeshProUGUI text)
         {
             this.text = text;
         }
@@ -24,7 +43,7 @@ namespace BetterBurnTime
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static SafeText of(Text text)
+        public static SafeText of(TextMeshProUGUI text)
         {
             // use ReferenceEquals here because Unity does weird overloading of operator ==
             if (Object.ReferenceEquals(text, null)) throw new ArgumentNullException("text cannot be null");

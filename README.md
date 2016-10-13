@@ -1,18 +1,15 @@
-# BetterBurnTime
-KSP mod for a more accurate/reliable "estimated burn time" indicator on the navball.  Also provides estimated time-of-impact for landing on vacuum worlds, and time-to-closest-approach for orbital rendezvous.
+# LiberatedBurnTime
+
+* A KSP mod for a more accurate/reliable "estimated burn time" indicator on the navball.  Also provides estimated time-of-impact for landing on vacuum worlds, and time-to-closest-approach for orbital rendezvous.  Based on the last MIT-licensed release of "BetterBurnTime" by Snark.*
 
 
-##How to install
-Unzip into your GameData folder, like any mod.
+## Features
 
-
-## What this mod does
-
-* It tweaks the "estimated burn time" display on the navball so that it will be reliable and accurate. It takes into account increasing acceleration as fuel mass is burned.
+* This addon tweaks the "estimated burn time" display on the navball so that it will be reliable and accurate. It takes into account increasing acceleration as fuel mass is burned.
 * When the ship is in vacuum and on a collision course with the ground, it will automatically show time-to-impact, and the estimated burn time to kill your velocity at ground level.
 * When the ship is in orbit and has a close rendezvous with a target ship, it will automatically show time-to-closest-approach, and the estimated burn time to kill your velocity relative to the target.
 
-####What this means:
+###What this means:
 
 **For maneuver nodes:**
 
@@ -29,8 +26,6 @@ Unzip into your GameData folder, like any mod.
 
 * If you can set up a rendezvous that will take you within 10 km of the target, you'll see an estimated time-until-closest-approach (instead of time-until-maneuver), and an estimated burn time to match velocity with the target.
 
-
-
 ## Why it's needed
 The "estimated burn time" indicator provided by stock KSP is very rudimentary. It just keeps track of the maximum acceleration observed for the current ship in the current flight session, and then assumes that. This has several drawbacks:
 
@@ -42,8 +37,7 @@ The "estimated burn time" indicator provided by stock KSP is very rudimentary. I
 
 This mod addresses all the above problems.
 
-![maneuver](https://raw.githubusercontent.com/KSPSnark/BetterBurnTime/master/screenshots/maneuver.png)
-
+![maneuver](https://raw.githubusercontent.com/Kerbas-ad-astra/LiberatedBurnTime/master/screenshots/maneuver.png)
 
 ## Things that the mod handles
 
@@ -56,19 +50,16 @@ This mod addresses all the above problems.
 * If the burn exceeds your available dV, it shows the time in a "warning" format.
 * It allows for engines that aren't parallel (e.g. if you have an active engine pointing the wrong way, it ups the estimate).
 
-
 ## The "countdown" indicator
 For maneuver nodes and closest-approach, the mod displays a "countdown" indicator. This is a little row of green dots, immediately below the estimated burn time. This row of dots counts down until it's time to start your burn: when the last dot disappears, start the burn.
 
-![countdown](https://raw.githubusercontent.com/KSPSnark/BetterBurnTime/master/screenshots/countdown.png)
+![countdown](https://raw.githubusercontent.com/Kerbas-ad-astra/LiberatedBurnTime/master/screenshots/countdown.png)
 
 The display is logarithmic.  The last three (biggest, leftmost) dots are in seconds:  3, 2, 1, go.  After the first three dots, it's 5 seconds, 10 seconds, 15 seconds, then it doubles for each dot after that.
-
 
 **Note:** No countdown indicator is currently shown for the "time to impact" indicator; this is because "when should I start?" is more complex, depending on a lot of factors including your descent angle, TWR, etc.  This feature may eventually be added, but until then, you're on your own.
 
 If you don't like this indicator, you can customize its appearance, make it numeric rather than graphic, or turn it off completely (see "How to configure", below).
-
 
 ## The "insufficient fuel" warning
 
@@ -82,12 +73,10 @@ If the mod decides that you don't have enough dV to do the specified maneuver, i
 
 Note that it won't do this if you have the "infinite fuel" cheat turned on (since then you always have enough dV!)
 
-
-
 ## The time-to-impact indicator
 Under the right circumstances, the mod will display a "time until impact" indicator (instead of "time until maneuver"), along with an estimated burn time which is how long your engine would need to kill your velocity at ground level.
 
-![Impact tracker](https://raw.githubusercontent.com/KSPSnark/BetterBurnTime/master/screenshots/impact.png)
+![Impact tracker](https://raw.githubusercontent.com/Kerbas-ad-astra/LiberatedBurnTime/master/screenshots/impact.png)
 
 All of the following conditions must be met for this indicator to be displayed:
 
@@ -120,7 +109,7 @@ All of the following conditions must be met for this indicator to be displayed:
 ## Caveats
 There's a reason this mod is called *BetterBurnTime* and not *PerfectBurnTime*.  There are some conditions that it does *not* handle, as follows:
 
-#### Doesn't predict staging
+### Doesn't predict staging
 The mod bases its acceleration and dV estimates on your *current* configuration. It doesn't know about whether or when you're going to stage in the future.
 
 Therefore, if you're going to be staging during the burn, this can cause a couple of inaccuracies:
@@ -128,16 +117,16 @@ Therefore, if you're going to be staging during the burn, this can cause a coupl
 * Underestimated burn time:  The mod's estimate is based only on the engines that are *currently* active. If your current stage is high-thrust and the next one will be low-thrust, then the mod will underestimate burn time because it's assuming that the whole burn will be with your current (high-thrust) engine.
 * False alarm for dV warning:  The mod assumes you're going to be burning all fuel on the current stage. It doesn't allow for the mass you're going to drop when you jettison spent stages. Therefore, if you stage during the burn, the mod will underestimate how much dV your craft can handle, and may show the dV warning even though you're fine.
 
-#### Doesn't predict fuel flow
+### Doesn't predict fuel flow
 The mod doesn't know what your fuel is going to do.  It naively assumes that all fuel on the ship (that hasn't been turned off by disabling the tank) is available to all active engines.  Therefore, there are a couple of situations it won't handle:
 
 * If you have a multi-stage rocket, the mod assumes that *all* fuel is available to your *current* stage.  It will base its estimate of "available dV" on that.
 * If you have multiple engines active now, but some of them are going to run out of fuel before others due to fuel flow issues, the mod doesn't predict that. It assumes that all fuel is available to all engines for the duration of the burn, and so it would underestimate the time in that case. (However, when the engines actually run out of fuel, the mod would immediately revise its estimate upwards.)
 
-#### Ignores zero-density resources (e.g. electricity)
+### Ignores zero-density resources (e.g. electricity)
 The mod assumes that any resources you have that don't have mass (e.g. electricity) are replenishable and therefore don't need to be tracked. Therefore, if you have an ion-powered craft and you're going to run out of electricity, the mod won't predict that. It will assume that you're going to have full electricity for the duration of the burn.
 
-#### Time to impact is very simplistic
+### Time to impact is very simplistic
 The calculations for determining when your ship will hit the surface are very simple.  It looks at the elevation directly under the ship, and at your current vertical speed.  It corrects for the acceleration of gravity, but nothing else.  This means that if you're flying over rough terrain, the time-to-impact indicator will be irregular (it will suddenly get shorter when you're flying over an ascending slope, or longer when you're flying over a descending slope).  If you're hurtling horizontally and about to smack into the side of a mountain range looming up in front of you, the mod has no clue.  Be warned.
 
 The mod does make a very rudimentary attempt to keep track of where the *bottom* of your ship is, so that impact time will be actual impact time and not when your probe core up top would hit.  It's only a very rough approximation, though, so don't count on pinpoint accuracy at low speeds.
@@ -160,7 +149,7 @@ There are certain circumstances in which the mod will drop down to a "simple" ca
 
 After the first time you run KSP with the mod installed, there will be a configuration file located at under this location in your KSP folder, which you can edit to adjust settings:
 
-GameData/BetterBurnTime/PluginData/BetterBurnTime/config.xml
+GameData/LiberatedBurnTime/PluginData/LiberatedBurnTime/config.xml
 
 The following settings are supported:
 
@@ -177,6 +166,15 @@ The following settings are supported:
     * To turn off the countdown indicator completely, set this to an empty string.
 * **CountdownTimes:** This string is a comma-delimited list of threshold times (in seconds) for displaying the number of pips in the countdown indicator. (Ignored if you're using a numeric countdown.)
 
--------
-#### Acknowledgments
-Thanks to [FullMetalMachinist](http://forum.kerbalspaceprogram.com/index.php?/profile/156531-fullmetalmachinist/) in the KSP forums for the [excellent suggestion](http://forum.kerbalspaceprogram.com/index.php?/topic/126111-105-betterburntime-v12-accurate-burn-time-indicator-on-navball-no-more-na/&page=4#comment-2422659) of using a row of dots to show the countdown-to-start-burn!  Ask and ye shall receive.  Thanks also to [Gen. Jack D. Ripper](http://forum.kerbalspaceprogram.com/index.php?/profile/144882-gen-jack-d-ripper/) for [usability suggestions](http://forum.kerbalspaceprogram.com/index.php?/topic/126111-105-betterburntime-v13-accurate-burn-time-indicator-on-navball-no-more-na/&do=findComment&comment=2425421) that led me to the updated countdown design.
+##Download and install
+
+* [**GitHub**](
+* CurseForge
+
+From there, just unzip the "LiberatedBurnTime" folder into your GameData directory.
+
+## Acknowledgments
+
+Snark wishes to acknowledge [FullMetalMachinist](http://forum.kerbalspaceprogram.com/index.php?/profile/156531-fullmetalmachinist/) in the KSP forums for the [excellent suggestion](http://forum.kerbalspaceprogram.com/index.php?/topic/126111-105-betterburntime-v12-accurate-burn-time-indicator-on-navball-no-more-na/&page=4#comment-2422659) of using a row of dots to show the countdown-to-start-burn, and [Gen. Jack D. Ripper](http://forum.kerbalspaceprogram.com/index.php?/profile/144882-gen-jack-d-ripper/) for [usability suggestions](http://forum.kerbalspaceprogram.com/index.php?/topic/126111-105-betterburntime-v13-accurate-burn-time-indicator-on-navball-no-more-na/&do=findComment&comment=2425421) that led to the updated countdown design.
+
+Of course, thanks are owed to Snark for giving me a reason to pursue this project.

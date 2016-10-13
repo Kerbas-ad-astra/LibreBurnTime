@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BetterBurnTime")]
+[assembly: AssemblyTitle("LiberatedBurnTime")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("BetterBurnTime")]
-[assembly: AssemblyCopyright("Copyright © Snark 2015")]
+[assembly: AssemblyProduct("LiberatedBurnTime")]
+[assembly: AssemblyCopyright("Copyright © Kerbas-ad-astra 2015, GPL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
