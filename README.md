@@ -1,4 +1,4 @@
-# LiberatedBurnTime
+# LibreBurnTime
 
 * A KSP mod for a more accurate/reliable "estimated burn time" indicator on the navball.  Also provides estimated time-of-impact for landing on vacuum worlds, and time-to-closest-approach for orbital rendezvous.  Based on the last MIT-licensed release of "BetterBurnTime" by Snark.*
 
@@ -37,7 +37,7 @@ The "estimated burn time" indicator provided by stock KSP is very rudimentary. I
 
 This mod addresses all the above problems.
 
-![maneuver](https://raw.githubusercontent.com/Kerbas-ad-astra/LiberatedBurnTime/master/screenshots/maneuver.png)
+![maneuver](https://raw.githubusercontent.com/Kerbas-ad-astra/LibreBurnTime/master/screenshots/maneuver.png)
 
 ## Things that the mod handles
 
@@ -53,7 +53,7 @@ This mod addresses all the above problems.
 ## The "countdown" indicator
 For maneuver nodes and closest-approach, the mod displays a "countdown" indicator. This is a little row of green dots, immediately below the estimated burn time. This row of dots counts down until it's time to start your burn: when the last dot disappears, start the burn.
 
-![countdown](https://raw.githubusercontent.com/Kerbas-ad-astra/LiberatedBurnTime/master/screenshots/countdown.png)
+![countdown](https://raw.githubusercontent.com/Kerbas-ad-astra/LibreBurnTime/master/screenshots/countdown.png)
 
 The display is logarithmic.  The last three (biggest, leftmost) dots are in seconds:  3, 2, 1, go.  After the first three dots, it's 5 seconds, 10 seconds, 15 seconds, then it doubles for each dot after that.
 
@@ -76,7 +76,7 @@ Note that it won't do this if you have the "infinite fuel" cheat turned on (sinc
 ## The time-to-impact indicator
 Under the right circumstances, the mod will display a "time until impact" indicator (instead of "time until maneuver"), along with an estimated burn time which is how long your engine would need to kill your velocity at ground level.
 
-![Impact tracker](https://raw.githubusercontent.com/Kerbas-ad-astra/LiberatedBurnTime/master/screenshots/impact.png)
+![Impact tracker](https://raw.githubusercontent.com/Kerbas-ad-astra/LibreBurnTime/master/screenshots/impact.png)
 
 All of the following conditions must be met for this indicator to be displayed:
 
@@ -93,7 +93,7 @@ Note that the time-to-impact is based on the assumption that you don't do a retr
 ## The time-to-closest-approach indicator
 Under the right circumstances, the mod will display a "time until closest approach" indicator (instead of "time until maneuver"), along with an estimated burn time to match velocity with the target.
 
-![Closest approach tracker](https://raw.githubusercontent.com/KSPSnark/BetterBurnTime/master/screenshots/approach.png)
+![Closest approach tracker](https://raw.githubusercontent.com/Kerbas-ad-astra/LibreBurnTime/master/screenshots/approach.png)
 
 All of the following conditions must be met for this indicator to be displayed:
 
@@ -107,7 +107,7 @@ All of the following conditions must be met for this indicator to be displayed:
 * You're not within 200 meters of the target and going under 10 m/s, or within 400 meters and going under 1 m/s
 
 ## Caveats
-There's a reason this mod is called *BetterBurnTime* and not *PerfectBurnTime*.  There are some conditions that it does *not* handle, as follows:
+There's a reason this mod's parent is called *BetterBurnTime* and not *PerfectBurnTime*.  There are some conditions that it does *not* handle, as follows:
 
 ### Doesn't predict staging
 The mod bases its acceleration and dV estimates on your *current* configuration. It doesn't know about whether or when you're going to stage in the future.
@@ -168,13 +168,26 @@ The following settings are supported:
 
 ##Download and install
 
-* [**GitHub**](
-* CurseForge
+Ordinarily, I'd direct you someplace to get a zip file to unzip into GameData, but BetterBurnTime is still in active development.  If you really care enough to use LBT over BBT, grab the source from [**GitHub**](https://github.com/Kerbas-ad-astra/LibreBurnTime) and compile it with your favorite C# development tools, then plop the DLL in a "LibreBurnTime" folder in GameData.
 
-From there, just unzip the "LiberatedBurnTime" folder into your GameData directory.
+##Version history and changelog
+
+* 02016 Oct 11 -- Snark changes the BBT license from MIT to CC-BY-NC-ND, inspiring the creation of LBT.
+
+##Roadmap
+
+Keep LBT up-to-date with KSP updates.  Make a snazzy logo.
+
+A fully-compiled release will happen when Snark gets hit by a bus, and not before.
+
+##Credits
 
 ## Acknowledgments
 
 Snark wishes to acknowledge [FullMetalMachinist](http://forum.kerbalspaceprogram.com/index.php?/profile/156531-fullmetalmachinist/) in the KSP forums for the [excellent suggestion](http://forum.kerbalspaceprogram.com/index.php?/topic/126111-105-betterburntime-v12-accurate-burn-time-indicator-on-navball-no-more-na/&page=4#comment-2422659) of using a row of dots to show the countdown-to-start-burn, and [Gen. Jack D. Ripper](http://forum.kerbalspaceprogram.com/index.php?/profile/144882-gen-jack-d-ripper/) for [usability suggestions](http://forum.kerbalspaceprogram.com/index.php?/topic/126111-105-betterburntime-v13-accurate-burn-time-indicator-on-navball-no-more-na/&do=findComment&comment=2425421) that led to the updated countdown design.
 
 Of course, thanks are owed to Snark for giving me a reason to pursue this project.
+
+##License
+
+LibreBurnTime is copyright 2016 Kerbas_ad_astra and released under the GNU GPL v3 (or any later version).  If you make a fork and redistribute it (unless it's intended to be merged with the master or if I'm handing over central control to someone else), you must give it a different name and folder in addition to the other anti-user-confusion provisions of the GPL (see sections 5a and 7).  All other rights reserved.

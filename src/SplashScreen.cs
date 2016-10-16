@@ -29,7 +29,8 @@ namespace LibreBurnTime
             "Calculating Better Burn Time...",
             "Predicting Time to Impact...",
             "Predicting Time to Closest Approach...",
-            "Displaying Countdown Indicator..."
+            "Displaying Countdown Indicator...",
+			"Protecting User Freedoms..."
         };
 
         internal void Awake()
