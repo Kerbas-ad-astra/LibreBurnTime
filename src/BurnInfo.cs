@@ -260,7 +260,7 @@ namespace LibreBurnTime
                 source.gameObject,
                 source.transform.position,
                 source.transform.rotation) as GameObject;
-            clonedObject.transform.parent = source.gameObject.transform.parent;
+            clonedObject.transform.SetParent(source.gameObject.transform.parent, false);
             T clonedBehaviour = clonedObject.GetComponent<T>();
 
             clonedBehaviour.enabled = false;
