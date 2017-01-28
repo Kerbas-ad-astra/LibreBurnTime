@@ -288,7 +288,8 @@ namespace LibreBurnTime
                                     isStarved = true;
                                     break;
                                 }
-                                ratioSum += propellant.ratio;
+								float density = PartResourceLibrary.Instance.GetDefinition(propellant.name).density;
+                                ratioSum += propellant.ratio * density;
                             }
                         }
                         if (isStarved) continue;
@@ -300,7 +301,8 @@ namespace LibreBurnTime
                                 Propellant propellant = engine.propellants[propellantIndex];
                                 if (!ShouldIgnore(propellant.name))
                                 {
-                                    double consumptionRate = ratio * propellant.ratio * engineTotalFuelConsumption; // tons/sec
+									float density = PartResourceLibrary.Instance.GetDefinition(propellant.name).density;
+									double consumptionRate = ratio * propellant.ratio * density * engineTotalFuelConsumption; // tons/sec
                                     propellantsConsumed.Add(propellant.name, consumptionRate);
                                 }
                             }
